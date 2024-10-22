@@ -1,0 +1,18 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  tomcat:
+    uri-encoding: UTF-8
+  error:
+    include-stacktrace: never
+
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/link_squeeze
+
+    # In real world, we would store credentials in something like a SecretsManager. This is just a test app, so
+    # it's OK to store directly in git
+    username: root
+    password: my-secret-pw
