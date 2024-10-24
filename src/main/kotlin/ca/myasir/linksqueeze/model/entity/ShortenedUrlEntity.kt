@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.javatime.date
 import org.jetbrains.exposed.sql.javatime.datetime
 
 object ShortenedUrlEntity : Table("shortened_urls") {
-    val urlHash = varchar("url_hash", SHORTENED_URL_LENGTH)
+    val urlHash = varchar("url_hash", SHORTENED_URL_LENGTH.toInt())
     val url = varchar("url", 255)
     val userId = varchar("user_id", 255).nullable()
     val expiryDate = datetime("expiry_date").nullable()

@@ -26,9 +26,7 @@ internal class UrlBoTest {
 
     @Test
     fun `it should create a url hash id with the given user id, insert into db, and return the hash`() {
-        val shortenedUrl = ShortenedUrl(
-            TEST_HASH_ID, TEST_URL, TEST_USER_ID, TEST_EXPIRY
-        )
+        val shortenedUrl = createSampleShortenedUrl()
 
         every { mockedHashService.createUniqueHash(TEST_URL) } returns TEST_HASH_ID
         justRun { mockedShortenedUrlDao.add(shortenedUrl) }
@@ -43,9 +41,7 @@ internal class UrlBoTest {
 
     @Test
     fun `it should create a url hash id with no user, insert into db, and return the hash`() {
-        val shortenedUrl = ShortenedUrl(
-            TEST_HASH_ID, TEST_URL, null, TEST_EXPIRY
-        )
+        val shortenedUrl = createSampleShortenedUrl(userId = null)
 
         every { mockedHashService.createUniqueHash(TEST_URL) } returns TEST_HASH_ID
         justRun { mockedShortenedUrlDao.add(shortenedUrl) }
@@ -60,9 +56,7 @@ internal class UrlBoTest {
 
     @Test
     fun `it should create a url hash id no expiry, insert into db, and return the hash`() {
-        val shortenedUrl = ShortenedUrl(
-            TEST_HASH_ID, TEST_URL, null, null
-        )
+        val shortenedUrl = createSampleShortenedUrl(userId = null, expiryDate = null)
 
         every { mockedHashService.createUniqueHash(TEST_URL) } returns TEST_HASH_ID
         justRun { mockedShortenedUrlDao.add(shortenedUrl) }
@@ -73,6 +67,17 @@ internal class UrlBoTest {
         verify(exactly = 1) {
             mockedShortenedUrlDao.add(shortenedUrl)
         }
+    }
+
+    @Test
+    fun `it should fetch the url for the given hash`() {
+        val expected = createSampleShortenedUrl()
+
+        every { mockedShortenedUrlDao.get(TEST_HASH_ID) } returns expected
+
+        val actual = bo.getUrl(TEST_HASH_ID)
+
+        assertEquals(expected, actual)
     }
 
     @Test
@@ -88,12 +93,12 @@ internal class UrlBoTest {
 
     @Test
     fun `it should call dao to delete a record with the given url hash`() {
-        justRun { mockedShortenedUrlDao.delete(TEST_HASH_ID) }
+        justRun { mockedShortenedUrlDao.delete(TEST_HASH_ID, TEST_USER_ID) }
 
-        bo.deleteUrl(TEST_HASH_ID)
+        bo.deleteUrl(TEST_HASH_ID, TEST_USER_ID)
 
         verify(exactly = 1) {
-            mockedShortenedUrlDao.delete(TEST_HASH_ID)
+            mockedShortenedUrlDao.delete(TEST_HASH_ID, TEST_USER_ID)
         }
     }
 }

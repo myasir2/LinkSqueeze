@@ -1,6 +1,8 @@
 package ca.myasir.linksqueeze.controller
 
+import ca.myasir.linksqueeze.exception.ResourceNotFoundException
 import ca.myasir.linksqueeze.model.response.ExceptionResponse
+import ca.myasir.linksqueeze.util.ResponseConstants
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -36,5 +38,13 @@ abstract class BaseController {
         return ExceptionResponse(
             "There are missing required properties in this request"
         )
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(value = [(ResourceNotFoundException::class)])
+    fun handleResourceNotFoundException(exception: ResourceNotFoundException): ExceptionResponse {
+        exception.printStackTrace();
+
+        return ExceptionResponse(ResponseConstants.RESOURCE_NOT_FOUND_MESSAGE)
     }
 }

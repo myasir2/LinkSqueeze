@@ -10,13 +10,12 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 class ShortenedUrlDaoImpl: ShortenedUrlDao {
 
     override fun add(shortenedUrl: ShortenedUrl) {
         return transaction {
-            StdOutSqlLogger
-
             ShortenedUrlEntity.insert {
                 it[urlHash] = shortenedUrl.urlHash.value
                 it[url] = shortenedUrl.url
@@ -24,6 +23,20 @@ class ShortenedUrlDaoImpl: ShortenedUrlDao {
                 it[expiryDate] = shortenedUrl.expiryDate?.toLocalDateTime()
             }
         }
+    }
+
+    override fun get(urlHash: UrlHash): ShortenedUrl? {
+        val record = transaction {
+            ShortenedUrlEntity.selectAll()
+                .limit(1)
+                .where {
+                    ShortenedUrlEntity.urlHash eq urlHash.value
+                }
+                .firstOrNull()
+        }?.let(::toShortenedUrl)
+
+        return record?.takeIf { it.expiryDate == null || it.expiryDate.isAfter(ZonedDateTime.now()) }
+            ?: record
     }
 
     override fun getByUser(userId: UserId): List<ShortenedUrl> {
@@ -35,10 +48,11 @@ class ShortenedUrlDaoImpl: ShortenedUrlDao {
         }
     }
 
-    override fun delete(urlHash: UrlHash) {
+    override fun delete(urlHash: UrlHash, userId: UserId) {
         transaction {
             ShortenedUrlEntity.deleteWhere {
                 ShortenedUrlEntity.urlHash eq urlHash.value
+                ShortenedUrlEntity.userId eq userId.value
             }
         }
     }

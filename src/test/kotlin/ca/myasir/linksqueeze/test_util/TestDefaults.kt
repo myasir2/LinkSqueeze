@@ -6,7 +6,6 @@ import ca.myasir.linksqueeze.util.UserId
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit
 
 object TestDefaults {
 
@@ -15,9 +14,14 @@ object TestDefaults {
     val TEST_HASH_ID = UrlHash("hash")
     val TEST_EXPIRY: ZonedDateTime = Instant.EPOCH.atZone(ZoneOffset.UTC)
 
-    fun createSampleShortenedUrl(): ShortenedUrl {
+    fun createSampleShortenedUrl(
+        url: String = TEST_URL,
+        urlHash: UrlHash = TEST_HASH_ID,
+        userId: UserId? = TEST_USER_ID,
+        expiryDate: ZonedDateTime? = TEST_EXPIRY,
+    ): ShortenedUrl {
         return ShortenedUrl(
-            TEST_HASH_ID, TEST_URL, TEST_USER_ID, TEST_EXPIRY
+            urlHash, url, userId, expiryDate
         )
     }
 }

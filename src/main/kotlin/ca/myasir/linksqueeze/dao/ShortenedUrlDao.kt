@@ -17,13 +17,18 @@ interface ShortenedUrlDao {
     fun add(shortenedUrl: ShortenedUrl)
 
     /**
+     * This method will return the url of the given url hash, and ensure it's not expired if expiry is present
+     */
+    fun get(urlHash: UrlHash): ShortenedUrl?
+
+    /**
      * This method will return all URLs created by the given user
      */
     fun getByUser(userId: UserId): List<ShortenedUrl>
 
     /**
-     * This method will delete the record with the given url hash. In the future, we may want to consider
-     * "marking as delete" or moving to a history table as opposed to deleting the actual data.
+     * This method will delete the record with the given url hash for the given user. In the future, we may want to
+     * consider "marking as delete" or moving to a history table as opposed to deleting the actual data
      */
-    fun delete(urlHash: UrlHash)
+    fun delete(urlHash: UrlHash, userId: UserId)
 }

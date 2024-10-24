@@ -16,3 +16,4 @@ spring:
     # it's OK to store directly in git
     username: root
     password: password
+siteUrl: "http://localhost:8080"

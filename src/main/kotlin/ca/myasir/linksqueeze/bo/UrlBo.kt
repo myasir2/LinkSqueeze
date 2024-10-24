@@ -1,18 +1,13 @@
 package ca.myasir.linksqueeze.bo
 
-import ca.myasir.auroraweatherservice.util.toIsoFormat
-import ca.myasir.linksqueeze.service.HashService
 import ca.myasir.linksqueeze.dao.ShortenedUrlDao
 import ca.myasir.linksqueeze.model.ShortenedUrl
+import ca.myasir.linksqueeze.service.HashService
 import ca.myasir.linksqueeze.util.UrlHash
 import ca.myasir.linksqueeze.util.UserId
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import java.time.Instant
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit
-import kotlin.math.exp
 
 /**
  * This class will handle all the business logic required for shortening urls, and managing them.
@@ -24,6 +19,11 @@ class UrlBo(
 ) {
 
     private val logger = KotlinLogging.logger {}
+
+    /**
+     * Get url for the given hashId
+     */
+    fun getUrl(urlHash: UrlHash): ShortenedUrl? = dao.get(urlHash)
 
     /**
      * Create a shortened URL, insert into database with max expiry date, and return its hash (i.e. shortened id)
@@ -57,16 +57,15 @@ class UrlBo(
     }
 
     /**
-     * Delete the given url hash
+     * Delete the given url hash for the given user
      */
-    fun deleteUrl(urlHash: UrlHash) {
+    fun deleteUrl(urlHash: UrlHash, userId: UserId) {
         logger.info { "Deleting url: $urlHash" }
 
-        dao.delete(urlHash)
+        dao.delete(urlHash, userId)
     }
 
     private companion object {
-        const val MAX_EXPIRY_DAYS = 30L
         const val SHORTENED_URL_LENGTH = 6
     }
 }
