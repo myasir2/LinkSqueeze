@@ -3,6 +3,8 @@ package ca.myasir.linksqueeze.model.request
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
+import org.springframework.format.annotation.DateTimeFormat
+import java.time.ZonedDateTime
 
 data class CreateShortenedUrlRequest(
 
@@ -12,4 +14,8 @@ data class CreateShortenedUrlRequest(
         message = "URL must be a valid format"
     )
     val url: String,
+
+    @JsonProperty("expiry")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    val expiry: ZonedDateTime? = null,
 )

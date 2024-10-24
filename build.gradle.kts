@@ -32,6 +32,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:0.55.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.55.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.55.0")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.55.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
 
     // Logging dependencies
@@ -41,7 +42,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.springframework.security:spring-security-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("io.mockk:mockk:1.13.13")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 }
@@ -54,4 +57,8 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+
+    jvmArgs(
+        "--add-opens=java.base/java.time=ALL-UNNAMED",
+    )
 }

@@ -1,12 +1,13 @@
 package ca.myasir.linksqueeze.model
 
+import ca.myasir.linksqueeze.util.UrlHash
+import ca.myasir.linksqueeze.util.UserId
 import java.time.ZonedDateTime
 
 data class ShortenedUrl(
 
-    // Nullable for when the entity is not yet saved
-    val id: Int? = null,
+    val urlHash: UrlHash,
     val url: String,
-    val userId: Int,
-    val expiryDate: ZonedDateTime?
+    val userId: UserId? = null,
+    val expiryDate: ZonedDateTime? = null,
 )
