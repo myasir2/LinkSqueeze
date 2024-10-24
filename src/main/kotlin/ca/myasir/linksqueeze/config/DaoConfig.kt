@@ -18,9 +18,4 @@ class DaoConfig(private val dataSource: DataSource) {
     fun connectDatabase() {
         Database.connect(dataSource)
     }
-
-    @Bean
-    fun getShortenedUrlDao(): ShortenedUrlDao {
-        return ShortenedUrlDaoImpl()
-    }
 }

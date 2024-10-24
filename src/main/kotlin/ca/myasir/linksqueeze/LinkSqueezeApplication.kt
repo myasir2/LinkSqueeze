@@ -1,6 +1,7 @@
 package ca.myasir.linksqueeze
 
 import ca.myasir.linksqueeze.model.entity.ShortenedUrlEntity
+import ca.myasir.linksqueeze.model.entity.UrlMetricEntity
 import mu.KotlinLogging
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -16,6 +17,6 @@ fun main(args: Array<String>) {
 
     // Create database tables if not already created
     transaction {
-        SchemaUtils.create(ShortenedUrlEntity)
+        SchemaUtils.create(ShortenedUrlEntity, UrlMetricEntity)
     }
 }

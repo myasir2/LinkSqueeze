@@ -1,7 +1,10 @@
 package ca.myasir.linksqueeze.bo
 
+import ca.myasir.linksqueeze.dao.MetricType
 import ca.myasir.linksqueeze.dao.ShortenedUrlDao
+import ca.myasir.linksqueeze.dao.UrlMetricsDao
 import ca.myasir.linksqueeze.model.ShortenedUrl
+import ca.myasir.linksqueeze.model.UrlMetric
 import ca.myasir.linksqueeze.service.HashService
 import ca.myasir.linksqueeze.util.UrlHash
 import ca.myasir.linksqueeze.util.UserId
@@ -15,15 +18,25 @@ import java.time.ZonedDateTime
 @Service
 class UrlBo(
     private val hashService: HashService,
-    private val dao: ShortenedUrlDao
+    private val dao: ShortenedUrlDao,
+    private val urlMetricsDao: UrlMetricsDao,
 ) {
 
     private val logger = KotlinLogging.logger {}
 
     /**
-     * Get url for the given hashId
+     * Get url for the given hashId and add metric count
      */
-    fun getUrl(urlHash: UrlHash): ShortenedUrl? = dao.get(urlHash)
+    fun getUrl(urlHash: UrlHash): ShortenedUrl? {
+        return dao.get(urlHash)?.also {
+            urlMetricsDao.addMetric(UrlMetric(
+                it.urlHash,
+                MetricType.COUNT,
+                1.0,
+                ZonedDateTime.now(),
+            ))
+        }
+    }
 
     /**
      * Create a shortened URL, insert into database with max expiry date, and return its hash (i.e. shortened id)

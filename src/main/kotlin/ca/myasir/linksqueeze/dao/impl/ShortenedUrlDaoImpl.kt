@@ -9,9 +9,11 @@ import org.apache.catalina.User
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.springframework.stereotype.Component
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
+@Component
 class ShortenedUrlDaoImpl: ShortenedUrlDao {
 
     override fun add(shortenedUrl: ShortenedUrl) {

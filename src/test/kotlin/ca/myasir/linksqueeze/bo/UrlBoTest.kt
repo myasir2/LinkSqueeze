@@ -1,9 +1,11 @@
 package ca.myasir.linksqueeze.bo
 
+import ca.myasir.linksqueeze.dao.MetricType
 import ca.myasir.linksqueeze.dao.ShortenedUrlDao
-import ca.myasir.linksqueeze.model.ShortenedUrl
+import ca.myasir.linksqueeze.dao.UrlMetricsDao
+import ca.myasir.linksqueeze.model.UrlMetric
 import ca.myasir.linksqueeze.service.HashService
-import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_HASH_ID
+import ca.myasir.linksqueeze.test_util.TestDefaults.URL_HASH
 import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_EXPIRY
 import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_URL
 import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_USER_ID
@@ -12,12 +14,14 @@ import io.mockk.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.ZonedDateTime
 
 internal class UrlBoTest {
 
     private val mockedShortenedUrlDao: ShortenedUrlDao = mockk()
+    private val mockedUrlMetricsDao: UrlMetricsDao = mockk()
     private val mockedHashService: HashService = mockk()
-    private val bo = UrlBo(mockedHashService, mockedShortenedUrlDao)
+    private val bo = UrlBo(mockedHashService, mockedShortenedUrlDao, mockedUrlMetricsDao)
 
     @BeforeEach
     fun setup() {
@@ -28,12 +32,12 @@ internal class UrlBoTest {
     fun `it should create a url hash id with the given user id, insert into db, and return the hash`() {
         val shortenedUrl = createSampleShortenedUrl()
 
-        every { mockedHashService.createUniqueHash(TEST_URL) } returns TEST_HASH_ID
+        every { mockedHashService.createUniqueHash(TEST_URL) } returns URL_HASH
         justRun { mockedShortenedUrlDao.add(shortenedUrl) }
 
         val actualHashId = bo.createShortenedUrl(TEST_URL, TEST_USER_ID, TEST_EXPIRY)
 
-        assertEquals(TEST_HASH_ID, actualHashId)
+        assertEquals(URL_HASH, actualHashId)
         verify(exactly = 1) {
             mockedShortenedUrlDao.add(shortenedUrl)
         }
@@ -43,12 +47,12 @@ internal class UrlBoTest {
     fun `it should create a url hash id with no user, insert into db, and return the hash`() {
         val shortenedUrl = createSampleShortenedUrl(userId = null)
 
-        every { mockedHashService.createUniqueHash(TEST_URL) } returns TEST_HASH_ID
+        every { mockedHashService.createUniqueHash(TEST_URL) } returns URL_HASH
         justRun { mockedShortenedUrlDao.add(shortenedUrl) }
 
         val actualHashId = bo.createShortenedUrl(TEST_URL, null, TEST_EXPIRY)
 
-        assertEquals(TEST_HASH_ID, actualHashId)
+        assertEquals(URL_HASH, actualHashId)
         verify(exactly = 1) {
             mockedShortenedUrlDao.add(shortenedUrl)
         }
@@ -58,26 +62,54 @@ internal class UrlBoTest {
     fun `it should create a url hash id no expiry, insert into db, and return the hash`() {
         val shortenedUrl = createSampleShortenedUrl(userId = null, expiryDate = null)
 
-        every { mockedHashService.createUniqueHash(TEST_URL) } returns TEST_HASH_ID
+        every { mockedHashService.createUniqueHash(TEST_URL) } returns URL_HASH
         justRun { mockedShortenedUrlDao.add(shortenedUrl) }
 
         val actualHashId = bo.createShortenedUrl(TEST_URL, null, null)
 
-        assertEquals(TEST_HASH_ID, actualHashId)
+        assertEquals(URL_HASH, actualHashId)
         verify(exactly = 1) {
             mockedShortenedUrlDao.add(shortenedUrl)
         }
     }
 
     @Test
-    fun `it should fetch the url for the given hash`() {
+    fun `it should fetch the url for the given hash and add metric count`() {
+        val date = ZonedDateTime.now()
         val expected = createSampleShortenedUrl()
+        val metric = UrlMetric(URL_HASH, MetricType.COUNT, 1.0, date)
 
-        every { mockedShortenedUrlDao.get(TEST_HASH_ID) } returns expected
+        mockkStatic(ZonedDateTime::class)
+        every { ZonedDateTime.now() } returns date
+        every { mockedShortenedUrlDao.get(URL_HASH) } returns expected
+        justRun { mockedUrlMetricsDao.addMetric(metric) }
 
-        val actual = bo.getUrl(TEST_HASH_ID)
+        val actual = bo.getUrl(URL_HASH)
 
         assertEquals(expected, actual)
+        verify(exactly = 1, ordering = Ordering.ORDERED) {
+            mockedShortenedUrlDao.get(URL_HASH)
+            mockedUrlMetricsDao.addMetric(metric)
+        }
+    }
+
+    @Test
+    fun `it should fetch the url for the given hash and not add metric count if url was not found`() {
+        val date = ZonedDateTime.now()
+        val metric = UrlMetric(URL_HASH, MetricType.COUNT, 1.0, date)
+
+        mockkStatic(ZonedDateTime::class)
+        every { ZonedDateTime.now() } returns date
+        every { mockedShortenedUrlDao.get(URL_HASH) } returns null
+
+        bo.getUrl(URL_HASH)
+
+        verify(exactly = 1) {
+            mockedShortenedUrlDao.get(URL_HASH)
+        }
+        verify(exactly = 0) {
+            mockedUrlMetricsDao.addMetric(metric)
+        }
     }
 
     @Test
@@ -93,12 +125,12 @@ internal class UrlBoTest {
 
     @Test
     fun `it should call dao to delete a record with the given url hash`() {
-        justRun { mockedShortenedUrlDao.delete(TEST_HASH_ID, TEST_USER_ID) }
+        justRun { mockedShortenedUrlDao.delete(URL_HASH, TEST_USER_ID) }
 
-        bo.deleteUrl(TEST_HASH_ID, TEST_USER_ID)
+        bo.deleteUrl(URL_HASH, TEST_USER_ID)
 
         verify(exactly = 1) {
-            mockedShortenedUrlDao.delete(TEST_HASH_ID, TEST_USER_ID)
+            mockedShortenedUrlDao.delete(URL_HASH, TEST_USER_ID)
         }
     }
 }

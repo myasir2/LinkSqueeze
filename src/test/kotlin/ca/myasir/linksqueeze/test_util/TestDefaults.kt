@@ -11,12 +11,12 @@ object TestDefaults {
 
     const val TEST_URL = "https://myasir.ca"
     val TEST_USER_ID = UserId("userId")
-    val TEST_HASH_ID = UrlHash("hash")
+    val URL_HASH = UrlHash("hash")
     val TEST_EXPIRY: ZonedDateTime = Instant.EPOCH.atZone(ZoneOffset.UTC)
 
     fun createSampleShortenedUrl(
         url: String = TEST_URL,
-        urlHash: UrlHash = TEST_HASH_ID,
+        urlHash: UrlHash = URL_HASH,
         userId: UserId? = TEST_USER_ID,
         expiryDate: ZonedDateTime? = TEST_EXPIRY,
     ): ShortenedUrl {
