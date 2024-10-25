@@ -1,3 +1,40 @@
 <div class="flex flex-row justify-center w-full min-h-full">
-    <div class="m-auto"><h2>test</h2></div>
+    <div class="flex flex-col mx-auto mt-10">
+        <div class="flex flex-row justify-between">
+            <h5 class="text-secondary mx-auto">Link Squeeze</h5>
+            <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
+                <button mat-stroked-button (click)="onLogin()" *ngIf="auth">Log In</button>
+            </ng-container>
+            <ng-template #loggedOut>
+                <button mat-stroked-button (click)="onLogOut()" *ngIf="auth">Log Out</button>
+            </ng-template>
+        </div>
+        <p>
+            Complete the form below to create a shortened URL.
+            If you would like to see a history of generated URLs, please log in.
+        </p>
+        <hr>
+        <form [formGroup]="form" class="flex flex-col gap-5 text-center">
+            <mat-form-field class="w-full">
+                <mat-label>URL</mat-label>
+                <input matInput placeholder="URL" formControlName="url">
+                <mat-error>
+                    <arv-validation-messages for="url"></arv-validation-messages>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Expiry Date</mat-label>
+                <input matInput [matDatepicker]="picker" [min]="minDate" [max]="maxDate">
+                <mat-hint>Up to 30 days</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <button mat-flat-button mat-raised-button (click)="onSubmit()" [disabled]="form.invalid || isFormSubmitting">
+                <mat-progress-spinner mode="indeterminate" class="my-2 mx-auto" diameter="21" *ngIf="isFormSubmitting"></mat-progress-spinner>
+                <div *ngIf="!isFormSubmitting">Submit</div>
+            </button>
+        </form>
+        <hr>
+
+    </div>
 </div>
