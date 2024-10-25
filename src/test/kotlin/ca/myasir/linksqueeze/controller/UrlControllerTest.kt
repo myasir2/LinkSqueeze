@@ -33,7 +33,7 @@ internal class UrlControllerTest {
     fun `it should call Bo to create a shortened url`() {
         val request = createCreateShortenedUrlRequest()
 
-        every { mockedUrlBo.createShortenedUrl(TEST_URL, null) } returns URL_HASH
+        every { mockedUrlBo.createShortenedUrl(TEST_URL, TEST_USER_ID, null) } returns URL_HASH
 
         val response = controller.createUrl(request)
         val actualHashId = response.body?.shortenedUrl

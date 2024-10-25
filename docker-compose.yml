@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:9.0.1
+    container_name: mysql_db
+    environment:
+
+      # In a real world, we would store these passwords in something like SecretsManager, but since this is a test app,
+      # it's OK to hardcode them
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: link_squeeze
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - spring-mysql-network
+
+  springboot:
+    image: public.ecr.aws/q8s2a7f3/myasir/link-squeeze:latest
+    container_name: spring_boot_service
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    environment:
+
+      # In a real world, we would store these passwords in something like SecretsManager, but since this is a test app,
+      # it's OK to hardcode them
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mysql_db:3306/link_squeeze?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+    networks:
+      - spring-mysql-network
+
+volumes:
+  mysql_data:
+
+networks:
+  spring-mysql-network:

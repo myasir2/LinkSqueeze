@@ -43,8 +43,6 @@ abstract class BaseController {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(value = [(ResourceNotFoundException::class)])
     fun handleResourceNotFoundException(exception: ResourceNotFoundException): ExceptionResponse {
-        exception.printStackTrace();
-
         return ExceptionResponse(ResponseConstants.RESOURCE_NOT_FOUND_MESSAGE)
     }
 }

@@ -87,7 +87,7 @@ internal class UrlBoTest {
         val actual = bo.getUrl(URL_HASH)
 
         assertEquals(expected, actual)
-        verify(exactly = 1, ordering = Ordering.ORDERED) {
+        verify(exactly = 1) {
             mockedShortenedUrlDao.get(URL_HASH)
             mockedUrlMetricsDao.addMetric(metric)
         }
