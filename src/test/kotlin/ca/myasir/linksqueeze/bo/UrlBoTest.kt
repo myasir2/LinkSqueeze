@@ -5,20 +5,24 @@ import ca.myasir.linksqueeze.dao.ShortenedUrlDao
 import ca.myasir.linksqueeze.dao.UrlMetricsDao
 import ca.myasir.linksqueeze.model.UrlMetric
 import ca.myasir.linksqueeze.service.HashService
-import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_EXPIRY
-import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_URL
-import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_URL_HASH
-import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_USER_ID
-import ca.myasir.linksqueeze.test_util.TestDefaults.createSampleShortenedUrl
-import ca.myasir.linksqueeze.test_util.TestDefaults.createSampleUrlMetric
-import io.mockk.*
+import ca.myasir.linksqueeze.testutil.TestDefaults.TEST_EXPIRY
+import ca.myasir.linksqueeze.testutil.TestDefaults.TEST_URL
+import ca.myasir.linksqueeze.testutil.TestDefaults.TEST_URL_HASH
+import ca.myasir.linksqueeze.testutil.TestDefaults.TEST_USER_ID
+import ca.myasir.linksqueeze.testutil.TestDefaults.createSampleShortenedUrl
+import ca.myasir.linksqueeze.testutil.TestDefaults.createSampleUrlMetric
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.justRun
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
 
 internal class UrlBoTest {
-
     private val mockedShortenedUrlDao: ShortenedUrlDao = mockk()
     private val mockedUrlMetricsDao: UrlMetricsDao = mockk()
     private val mockedHashService: HashService = mockk()

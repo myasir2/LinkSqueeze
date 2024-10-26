@@ -1,4 +1,4 @@
-package ca.myasir.linksqueeze.test_util
+package ca.myasir.linksqueeze.testutil
 
 import ca.myasir.linksqueeze.dao.MetricType
 import ca.myasir.linksqueeze.model.ShortenedUrl
@@ -11,7 +11,6 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 object TestDefaults {
-
     const val TEST_URL = "https://myasir.ca"
     val TEST_USER_ID = UserId("userId")
     val TEST_URL_HASH = UrlHash("hash")
@@ -25,7 +24,10 @@ object TestDefaults {
         expiryDate: ZonedDateTime? = TEST_EXPIRY,
     ): ShortenedUrl {
         return ShortenedUrl(
-            urlHash, url, userId, expiryDate
+            urlHash,
+            url,
+            userId,
+            expiryDate,
         )
     }
 

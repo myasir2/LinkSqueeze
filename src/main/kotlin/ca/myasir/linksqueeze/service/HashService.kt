@@ -10,12 +10,14 @@ import java.time.Instant
 
 @Service
 class HashService {
-
     /**
      * This method will hash the given text with the given salt, and return a truncated hash. It uses ISO datetime
      * from Instant.now() as the salt to ensure uniqueness
      */
-    fun createUniqueHash(text: String, length: Int = 6): UrlHash {
+    fun createUniqueHash(
+        text: String,
+        length: Int = 6,
+    ): UrlHash {
         // MD5 returns a 32 character string
         require(length < MAX_HASH_LENGTH)
 

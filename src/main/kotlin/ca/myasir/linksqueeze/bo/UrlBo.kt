@@ -21,7 +21,6 @@ class UrlBo(
     private val shortenedUrlDao: ShortenedUrlDao,
     private val urlMetricsDao: UrlMetricsDao,
 ) {
-
     private val logger = KotlinLogging.logger {}
 
     /**
@@ -29,12 +28,14 @@ class UrlBo(
      */
     fun getUrl(urlHash: UrlHash): ShortenedUrl? {
         return shortenedUrlDao.get(urlHash)?.also {
-            urlMetricsDao.addMetric(UrlMetric(
-                it.urlHash,
-                MetricType.COUNT,
-                1.0,
-                ZonedDateTime.now(),
-            ))
+            urlMetricsDao.addMetric(
+                UrlMetric(
+                    it.urlHash,
+                    MetricType.COUNT,
+                    1.0,
+                    ZonedDateTime.now(),
+                ),
+            )
         }
     }
 
@@ -63,16 +64,21 @@ class UrlBo(
     /**
      * Create a shortened URL, insert into database with max expiry date, and return its hash (i.e. shortened id)
      */
-    fun createShortenedUrl(url: String, userId: UserId?, expiry: ZonedDateTime? = null): ShortenedUrl {
+    fun createShortenedUrl(
+        url: String,
+        userId: UserId?,
+        expiry: ZonedDateTime? = null,
+    ): ShortenedUrl {
         logger.info { "Creating shortened url: $url by $userId" }
 
         val urlHash = hashService.createUniqueHash(url, SHORTENED_URL_LENGTH)
-        val shortenedUrl = ShortenedUrl(
-            urlHash = urlHash,
-            url = url,
-            userId = userId,
-            expiryDate = expiry
-        )
+        val shortenedUrl =
+            ShortenedUrl(
+                urlHash = urlHash,
+                url = url,
+                userId = userId,
+                expiryDate = expiry,
+            )
         shortenedUrlDao.add(shortenedUrl)
 
         return shortenedUrl
@@ -81,7 +87,10 @@ class UrlBo(
     /**
      * Delete the given url hash for the given user
      */
-    fun deleteUrl(urlHash: UrlHash, userId: UserId) {
+    fun deleteUrl(
+        urlHash: UrlHash,
+        userId: UserId,
+    ) {
         logger.info { "Deleting url: $urlHash" }
 
         shortenedUrlDao.delete(urlHash, userId)

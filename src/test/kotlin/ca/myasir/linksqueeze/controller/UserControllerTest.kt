@@ -10,14 +10,18 @@ import ca.myasir.linksqueeze.model.UrlDetails
 import ca.myasir.linksqueeze.model.request.CreateShortenedUrlRequest
 import ca.myasir.linksqueeze.model.response.DeleteUrlRequest
 import ca.myasir.linksqueeze.model.response.GetUrlMetricsRequest
-import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_URL
-import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_URL_HASH
-import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_USER_ID
-import ca.myasir.linksqueeze.test_util.TestDefaults.createSampleShortenedUrl
-import ca.myasir.linksqueeze.test_util.TestDefaults.createSampleUrlDetails
-import ca.myasir.linksqueeze.test_util.TestDefaults.createSampleUrlMetric
+import ca.myasir.linksqueeze.testutil.TestDefaults.TEST_URL
+import ca.myasir.linksqueeze.testutil.TestDefaults.TEST_URL_HASH
+import ca.myasir.linksqueeze.testutil.TestDefaults.TEST_USER_ID
+import ca.myasir.linksqueeze.testutil.TestDefaults.createSampleShortenedUrl
+import ca.myasir.linksqueeze.testutil.TestDefaults.createSampleUrlDetails
+import ca.myasir.linksqueeze.testutil.TestDefaults.createSampleUrlMetric
 import ca.myasir.linksqueeze.util.UrlHash
-import io.mockk.*
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.justRun
+import io.mockk.mockk
+import io.mockk.verify
 import jakarta.servlet.http.HttpServletRequest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -27,7 +31,6 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
 
 internal class UserControllerTest {
-
     private val mockedServletRequest: HttpServletRequest = mockk()
     private val mockedUrlBo: UrlBo = mockk()
     private val mockedAppConfig: AppConfig = mockk()
@@ -106,13 +109,14 @@ internal class UserControllerTest {
     @Test
     fun `it should return user saved urls`() {
         val urls = listOf(createSampleShortenedUrl())
-        val expected = urls.map {
-            UrlDetails(
-                originalUrl = it.url,
-                shortenedUrl = "$TEST_URL/${it.urlHash.value}",
-                expiry = it.expiryDate
-            )
-        }
+        val expected =
+            urls.map {
+                UrlDetails(
+                    originalUrl = it.url,
+                    shortenedUrl = "$TEST_URL/${it.urlHash.value}",
+                    expiry = it.expiryDate,
+                )
+            }
 
         every { mockedUrlBo.getUserSavedUrls(context.userId) } returns urls
 
@@ -142,10 +146,11 @@ internal class UserControllerTest {
     @Test
     fun `it should throw NotFoundException if URL doesn't exist for the given user id and hash`() {
         val request = createGetUrlMetricsRequest()
-        val existingUrls = listOf(
-            emptyList(),
-            listOf(createSampleShortenedUrl(urlHash = UrlHash("somethingdifference")))
-        )
+        val existingUrls =
+            listOf(
+                emptyList(),
+                listOf(createSampleShortenedUrl(urlHash = UrlHash("somethingdifference"))),
+            )
 
         for (url in existingUrls) {
             every { mockedUrlBo.getUserSavedUrls(context.userId) } returns url

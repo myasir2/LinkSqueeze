@@ -7,7 +7,6 @@ import ca.myasir.linksqueeze.util.UrlHash
  * This interface will be responsible to interact with the url metrics database/service
  */
 interface UrlMetricsDao {
-
     /**
      * This method will add a new metric row for the given user/user id combo, and a count of +1
      */
@@ -20,5 +19,5 @@ interface UrlMetricsDao {
 }
 
 enum class MetricType {
-    COUNT
+    COUNT,
 }

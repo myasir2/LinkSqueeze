@@ -5,17 +5,18 @@ import ca.myasir.linksqueeze.model.ShortenedUrl
 import ca.myasir.linksqueeze.model.entity.ShortenedUrlEntity
 import ca.myasir.linksqueeze.util.UrlHash
 import ca.myasir.linksqueeze.util.UserId
-import org.apache.catalina.User
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Component
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 @Component
-class ShortenedUrlDaoImpl: ShortenedUrlDao {
-
+class ShortenedUrlDaoImpl : ShortenedUrlDao {
     override fun add(shortenedUrl: ShortenedUrl) {
         return transaction {
             ShortenedUrlEntity.insert {
@@ -28,14 +29,15 @@ class ShortenedUrlDaoImpl: ShortenedUrlDao {
     }
 
     override fun get(urlHash: UrlHash): ShortenedUrl? {
-        val record = transaction {
-            ShortenedUrlEntity.selectAll()
-                .limit(1)
-                .where {
-                    ShortenedUrlEntity.urlHash eq urlHash.value
-                }
-                .firstOrNull()
-        }?.let(::toShortenedUrl)
+        val record =
+            transaction {
+                ShortenedUrlEntity.selectAll()
+                    .limit(1)
+                    .where {
+                        ShortenedUrlEntity.urlHash eq urlHash.value
+                    }
+                    .firstOrNull()
+            }?.let(::toShortenedUrl)
 
         return record?.takeIf { it.expiryDate == null || it.expiryDate.isAfter(ZonedDateTime.now()) }
             ?: record
@@ -50,7 +52,10 @@ class ShortenedUrlDaoImpl: ShortenedUrlDao {
         }
     }
 
-    override fun delete(urlHash: UrlHash, userId: UserId) {
+    override fun delete(
+        urlHash: UrlHash,
+        userId: UserId,
+    ) {
         transaction {
             ShortenedUrlEntity.deleteWhere {
                 ShortenedUrlEntity.urlHash eq urlHash.value

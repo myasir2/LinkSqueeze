@@ -6,9 +6,8 @@ import jakarta.validation.constraints.Min
 import org.springframework.web.bind.annotation.PathVariable
 
 data class RedirectToUrlRequest(
-
     @PathVariable("hashId", required = true)
     @Min(value = URL_HASH_LENGTH)
     @Max(value = URL_HASH_LENGTH)
-    val hashId: String
+    val hashId: String,
 )

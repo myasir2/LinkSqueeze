@@ -10,7 +10,6 @@ import ca.myasir.linksqueeze.util.UserId
  * To ensure we don't have to change code in all places, we can ensure our future dao uses this interface
  */
 interface ShortenedUrlDao {
-
     /**
      * This method will add the given shortened url data to the database
      */
@@ -30,5 +29,8 @@ interface ShortenedUrlDao {
      * This method will delete the record with the given url hash for the given user. In the future, we may want to
      * consider "marking as delete" or moving to a history table as opposed to deleting the actual data
      */
-    fun delete(urlHash: UrlHash, userId: UserId)
+    fun delete(
+        urlHash: UrlHash,
+        userId: UserId,
+    )
 }

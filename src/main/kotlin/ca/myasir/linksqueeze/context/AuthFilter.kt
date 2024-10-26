@@ -27,28 +27,30 @@ import java.security.InvalidParameterException
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 
-
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class AuthFilter(
-
     appConfig: AppConfig,
-    private val gson: Gson
-): Filter {
-
+    private val gson: Gson,
+) : Filter {
     private val bearerTokenPrefix = "Bearer "
     private val auth0Tenant = appConfig.auth0Tenant
     private val jwkProvider = UrlJwkProvider(appConfig.auth0Tenant)
     private val keyIdToPublicKeyMap = mutableMapOf<String, RSAPublicKey>()
     private val logger = KotlinLogging.logger {}
-    private val allowedUnauthenticatedPaths = setOf(
-        GENERATE_URL_ROUTE
-    )
+    private val allowedUnauthenticatedPaths =
+        setOf(
+            GENERATE_URL_ROUTE,
+        )
 
     /**
      * If an access token is given, then get the user information from Auth0 and put it in the Context
      */
-    override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
+    override fun doFilter(
+        request: ServletRequest?,
+        response: ServletResponse?,
+        chain: FilterChain?,
+    ) {
         val httpServletRequest = request as HttpServletRequest
         val httpServletResponse = response as HttpServletResponse
         val authorizationHeaderValue = httpServletRequest.getHeader("Authorization")
@@ -66,7 +68,7 @@ class AuthFilter(
             }
         }
 
-        if(authorizationHeaderValue == null || !authorizationHeaderValue.startsWith(bearerTokenPrefix)) {
+        if (authorizationHeaderValue == null || !authorizationHeaderValue.startsWith(bearerTokenPrefix)) {
             setUnauthorizedResponse(httpServletResponse)
 
             return
@@ -76,7 +78,7 @@ class AuthFilter(
         val token = authorizationHeaderValue.replace(bearerTokenPrefix, "")
         val user = getUser(token)
 
-        if(user == null) {
+        if (user == null) {
             setUnauthorizedResponse(httpServletResponse)
 
             return
@@ -91,9 +93,10 @@ class AuthFilter(
             val algorithm = Algorithm.RSA256(publicKey, null as RSAPrivateKey?)
 
             // Verify JWT
-            val verifier = JWT.require(algorithm)
-                .withIssuer(decodedJWT.issuer)
-                .build()
+            val verifier =
+                JWT.require(algorithm)
+                    .withIssuer(decodedJWT.issuer)
+                    .build()
             verifier.verify(decodedJWT)
 
             // Create and set the context to request attribute
@@ -103,8 +106,7 @@ class AuthFilter(
             logger.info { user }
 
             chain!!.doFilter(httpServletRequest, httpServletResponse)
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             logger.info { "Exception in AuthFilter: " + e.message }
 
             setUnauthorizedResponse(httpServletResponse)
@@ -123,8 +125,10 @@ class AuthFilter(
         val restTemplate = RestTemplate()
 
         return restTemplate.exchange(
-            "${auth0Tenant}userinfo", HttpMethod.POST, entity,
-            User::class.java
+            "${auth0Tenant}userinfo",
+            HttpMethod.POST,
+            entity,
+            User::class.java,
         ).body
     }
 
@@ -145,9 +149,11 @@ class AuthFilter(
     private fun setUnauthorizedResponse(response: HttpServletResponse) {
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.writer.write(
-            gson.toJson(mapOf(
-                "message" to "Unauthorized"
-            ))
+            gson.toJson(
+                mapOf(
+                    "message" to "Unauthorized",
+                ),
+            ),
         )
     }
 }

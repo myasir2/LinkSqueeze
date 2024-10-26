@@ -1,19 +1,18 @@
 package ca.myasir.linksqueeze.service
 
-import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_EXPIRY
-import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_URL
+import ca.myasir.linksqueeze.testutil.TestDefaults.TEST_URL
 import ca.myasir.linksqueeze.util.UrlHash
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockkStatic
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.Instant
 
 internal class UrlHashServiceTest {
-
     private val text = TEST_URL
     private val service = HashService()
 

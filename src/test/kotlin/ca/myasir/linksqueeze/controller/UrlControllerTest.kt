@@ -5,10 +5,10 @@ import ca.myasir.linksqueeze.config.AppConfig
 import ca.myasir.linksqueeze.exception.ResourceNotFoundException
 import ca.myasir.linksqueeze.model.request.CreateShortenedUrlRequest
 import ca.myasir.linksqueeze.model.response.RedirectToUrlRequest
-import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_URL
-import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_URL_HASH
-import ca.myasir.linksqueeze.test_util.TestDefaults.createSampleShortenedUrl
-import ca.myasir.linksqueeze.test_util.TestDefaults.createSampleUrlDetails
+import ca.myasir.linksqueeze.testutil.TestDefaults.TEST_URL
+import ca.myasir.linksqueeze.testutil.TestDefaults.TEST_URL_HASH
+import ca.myasir.linksqueeze.testutil.TestDefaults.createSampleShortenedUrl
+import ca.myasir.linksqueeze.testutil.TestDefaults.createSampleUrlDetails
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 internal class UrlControllerTest {
-
     private val mockedUrlBo: UrlBo = mockk()
     private val mockedAppConfig: AppConfig = mockk()
     private val controller = UrlController(mockedAppConfig, mockedUrlBo)

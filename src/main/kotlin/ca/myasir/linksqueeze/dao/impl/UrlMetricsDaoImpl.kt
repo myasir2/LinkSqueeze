@@ -14,8 +14,7 @@ import java.math.BigDecimal
 import java.time.ZoneOffset
 
 @Component
-class UrlMetricsDaoImpl: UrlMetricsDao {
-
+class UrlMetricsDaoImpl : UrlMetricsDao {
     override fun addMetric(urlMetric: UrlMetric) {
         transaction {
             UrlMetricEntity.upsert {

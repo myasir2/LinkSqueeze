@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseStatus
 abstract class BaseController(
     private val appConfig: AppConfig,
 ) {
-
     fun extractContextFromRequest(request: HttpServletRequest): Context {
         return request.getAttribute(RequestAttributeType.CONTEXT.toString()) as Context
     }
@@ -45,7 +44,7 @@ abstract class BaseController(
     @ExceptionHandler(value = [(HttpMessageNotReadableException::class)])
     fun handleMissingFieldsExceptionForPostRequests(exception: HttpMessageNotReadableException): ExceptionResponse {
         return ExceptionResponse(
-            "There are missing required properties in this request"
+            "There are missing required properties in this request",
         )
     }
 
