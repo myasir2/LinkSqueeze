@@ -2,6 +2,7 @@ package ca.myasir.linksqueeze.test_util
 
 import ca.myasir.linksqueeze.dao.MetricType
 import ca.myasir.linksqueeze.model.ShortenedUrl
+import ca.myasir.linksqueeze.model.UrlDetails
 import ca.myasir.linksqueeze.model.UrlMetric
 import ca.myasir.linksqueeze.util.UrlHash
 import ca.myasir.linksqueeze.util.UserId
@@ -39,6 +40,18 @@ object TestDefaults {
             metricType = metricType,
             count = count,
             date = date,
+        )
+    }
+
+    fun createSampleUrlDetails(
+        originalUrl: String = TEST_URL,
+        shortenedUrl: String = "${TEST_URL}/${TEST_URL_HASH.value}",
+        expiry: ZonedDateTime? = TEST_EXPIRY,
+    ): UrlDetails {
+        return UrlDetails(
+            originalUrl = originalUrl,
+            shortenedUrl = shortenedUrl,
+            expiry = expiry,
         )
     }
 }

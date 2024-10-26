@@ -3,7 +3,7 @@ package ca.myasir.linksqueeze.controller
 import ca.myasir.linksqueeze.bo.UrlBo
 import ca.myasir.linksqueeze.config.AppConfig
 import ca.myasir.linksqueeze.exception.ResourceNotFoundException
-import ca.myasir.linksqueeze.model.UserSavedUrl
+import ca.myasir.linksqueeze.model.UrlDetails
 import ca.myasir.linksqueeze.model.request.CreateShortenedUrlRequest
 import ca.myasir.linksqueeze.model.response.*
 import ca.myasir.linksqueeze.util.UrlHash
@@ -35,9 +35,9 @@ class UrlController(
     fun getUserSavedUrls(): ResponseEntity<GetUserSavedUrlsResponse> {
         val urls = urlBo.getUserSavedUrls(UserId("userId"))
         val savedUrls = urls.map {
-            UserSavedUrl(
-                url = it.url,
-                urlHash = it.urlHash.value,
+            UrlDetails(
+                originalUrl = it.url,
+                shortenedUrl = createFullUrl(it.urlHash),
                 expiry = it.expiryDate
             )
         }
@@ -58,13 +58,15 @@ class UrlController(
 
     @PostMapping("/generate")
     fun createUrl(@Valid @RequestBody request: CreateShortenedUrlRequest): ResponseEntity<CreateShortenedUrlResponse> {
-        val hash = urlBo.createShortenedUrl(request.url, UserId("userId"), request.expiry)
+        val shortenedUrl = urlBo.createShortenedUrl(request.url, UserId("userId"), request.expiry)
+        val urlDetails = UrlDetails(
+            originalUrl = shortenedUrl.url,
+            shortenedUrl = createFullUrl(shortenedUrl.urlHash),
+            expiry = shortenedUrl.expiryDate
+        )
 
         return ResponseEntity.ok(
-            CreateShortenedUrlResponse(
-                createFullUrl(hash),
-                request.expiry
-            )
+            CreateShortenedUrlResponse(urlDetails)
         )
     }
 

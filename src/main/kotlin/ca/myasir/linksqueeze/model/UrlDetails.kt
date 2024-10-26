@@ -2,9 +2,9 @@ package ca.myasir.linksqueeze.model
 
 import java.time.ZonedDateTime
 
-data class UserSavedUrl(
+data class UrlDetails(
 
-    val url: String,
-    val urlHash: String,
+    val originalUrl: String,
+    val shortenedUrl: String,
     val expiry: ZonedDateTime? = null,
 )

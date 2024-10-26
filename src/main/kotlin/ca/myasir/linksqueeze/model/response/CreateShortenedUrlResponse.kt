@@ -1,13 +1,10 @@
 package ca.myasir.linksqueeze.model.response
 
+import ca.myasir.linksqueeze.model.UrlDetails
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.time.ZonedDateTime
 
 data class CreateShortenedUrlResponse(
 
-    @JsonProperty("shortenedUrl")
-    val shortenedUrl: String,
-
-    @JsonProperty("expiryDate")
-    val expiryDate: ZonedDateTime?
+    @JsonProperty("urlDetails")
+    val urlDetails: UrlDetails
 )

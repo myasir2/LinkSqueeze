@@ -63,7 +63,7 @@ class UrlBo(
     /**
      * Create a shortened URL, insert into database with max expiry date, and return its hash (i.e. shortened id)
      */
-    fun createShortenedUrl(url: String, userId: UserId?, expiry: ZonedDateTime? = null): UrlHash {
+    fun createShortenedUrl(url: String, userId: UserId?, expiry: ZonedDateTime? = null): ShortenedUrl {
         logger.info { "Creating shortened url: $url by $userId" }
 
         val urlHash = hashService.createUniqueHash(url, SHORTENED_URL_LENGTH)
@@ -75,7 +75,7 @@ class UrlBo(
         )
         shortenedUrlDao.add(shortenedUrl)
 
-        return urlHash
+        return shortenedUrl
     }
 
     /**

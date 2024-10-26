@@ -3,7 +3,7 @@ package ca.myasir.linksqueeze.controller
 import ca.myasir.linksqueeze.bo.UrlBo
 import ca.myasir.linksqueeze.config.AppConfig
 import ca.myasir.linksqueeze.exception.ResourceNotFoundException
-import ca.myasir.linksqueeze.model.UserSavedUrl
+import ca.myasir.linksqueeze.model.UrlDetails
 import ca.myasir.linksqueeze.model.request.CreateShortenedUrlRequest
 import ca.myasir.linksqueeze.model.response.DeleteUrlRequest
 import ca.myasir.linksqueeze.model.response.GetUrlMetricsRequest
@@ -12,6 +12,7 @@ import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_URL
 import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_URL_HASH
 import ca.myasir.linksqueeze.test_util.TestDefaults.TEST_USER_ID
 import ca.myasir.linksqueeze.test_util.TestDefaults.createSampleShortenedUrl
+import ca.myasir.linksqueeze.test_util.TestDefaults.createSampleUrlDetails
 import ca.myasir.linksqueeze.test_util.TestDefaults.createSampleUrlMetric
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -40,12 +41,13 @@ internal class UrlControllerTest {
     @Test
     fun `it should call Bo to create a shortened url`() {
         val request = createCreateShortenedUrlRequest()
-        val expected = "${TEST_URL}/${TEST_URL_HASH.value}"
+        val shortenedUrl = createSampleShortenedUrl()
+        val expected = createSampleUrlDetails()
 
-        every { mockedUrlBo.createShortenedUrl(TEST_URL, TEST_USER_ID, null) } returns TEST_URL_HASH
+        every { mockedUrlBo.createShortenedUrl(TEST_URL, TEST_USER_ID, null) } returns shortenedUrl
 
         val response = controller.createUrl(request)
-        val actual = response.body?.shortenedUrl
+        val actual = response.body?.urlDetails
 
         assertEquals(expected, actual)
     }
@@ -89,9 +91,9 @@ internal class UrlControllerTest {
     fun `it should return user saved urls`() {
         val urls = listOf(createSampleShortenedUrl())
         val expected = urls.map {
-            UserSavedUrl(
-                url = it.url,
-                urlHash = it.urlHash.value,
+            UrlDetails(
+                originalUrl = it.url,
+                shortenedUrl = "$TEST_URL/${it.urlHash.value}",
                 expiry = it.expiryDate
             )
         }

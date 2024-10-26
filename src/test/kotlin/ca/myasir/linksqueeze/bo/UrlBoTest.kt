@@ -31,46 +31,46 @@ internal class UrlBoTest {
 
     @Test
     fun `it should create a url hash id with the given user id, insert into db, and return the hash`() {
-        val shortenedUrl = createSampleShortenedUrl()
+        val expected = createSampleShortenedUrl()
 
         every { mockedHashService.createUniqueHash(TEST_URL) } returns TEST_URL_HASH
-        justRun { mockedShortenedUrlDao.add(shortenedUrl) }
+        justRun { mockedShortenedUrlDao.add(expected) }
 
-        val actualHashId = bo.createShortenedUrl(TEST_URL, TEST_USER_ID, TEST_EXPIRY)
+        val actual = bo.createShortenedUrl(TEST_URL, TEST_USER_ID, TEST_EXPIRY)
 
-        assertEquals(TEST_URL_HASH, actualHashId)
+        assertEquals(expected, actual)
         verify(exactly = 1) {
-            mockedShortenedUrlDao.add(shortenedUrl)
+            mockedShortenedUrlDao.add(expected)
         }
     }
 
     @Test
     fun `it should create a url hash id with no user, insert into db, and return the hash`() {
-        val shortenedUrl = createSampleShortenedUrl(userId = null)
+        val expected = createSampleShortenedUrl(userId = null)
 
         every { mockedHashService.createUniqueHash(TEST_URL) } returns TEST_URL_HASH
-        justRun { mockedShortenedUrlDao.add(shortenedUrl) }
+        justRun { mockedShortenedUrlDao.add(expected) }
 
-        val actualHashId = bo.createShortenedUrl(TEST_URL, null, TEST_EXPIRY)
+        val actual = bo.createShortenedUrl(TEST_URL, null, TEST_EXPIRY)
 
-        assertEquals(TEST_URL_HASH, actualHashId)
+        assertEquals(expected, actual)
         verify(exactly = 1) {
-            mockedShortenedUrlDao.add(shortenedUrl)
+            mockedShortenedUrlDao.add(expected)
         }
     }
 
     @Test
     fun `it should create a url hash id no expiry, insert into db, and return the hash`() {
-        val shortenedUrl = createSampleShortenedUrl(userId = null, expiryDate = null)
+        val expected = createSampleShortenedUrl(userId = null, expiryDate = null)
 
         every { mockedHashService.createUniqueHash(TEST_URL) } returns TEST_URL_HASH
-        justRun { mockedShortenedUrlDao.add(shortenedUrl) }
+        justRun { mockedShortenedUrlDao.add(expected) }
 
-        val actualHashId = bo.createShortenedUrl(TEST_URL, null, null)
+        val actual = bo.createShortenedUrl(TEST_URL, null, null)
 
-        assertEquals(TEST_URL_HASH, actualHashId)
+        assertEquals(expected, actual)
         verify(exactly = 1) {
-            mockedShortenedUrlDao.add(shortenedUrl)
+            mockedShortenedUrlDao.add(expected)
         }
     }
 
