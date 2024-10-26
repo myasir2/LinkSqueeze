@@ -60,7 +60,7 @@ class ShortenedUrlDaoImpl : ShortenedUrlDao {
         transaction {
             ShortenedUrlEntity.deleteWhere {
                 (ShortenedUrlEntity.urlHash eq urlHash.value) and
-                (ShortenedUrlEntity.userId eq userId.value)
+                        (ShortenedUrlEntity.userId eq userId.value)
             }
         }
     }

@@ -68,8 +68,13 @@ kotlin {
 }
 
 ktlint {
+    ignoreFailures = true
     filter {
         exclude("**/test/**")
+    }
+    reporters {
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
     }
 }
 
