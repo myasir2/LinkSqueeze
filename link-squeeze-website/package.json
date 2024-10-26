@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "docker-start": "BACKEND_API_URL=http://api:8080 node generate-proxy-config.js && ng serve"
   },
   "private": true,
   "dependencies": {

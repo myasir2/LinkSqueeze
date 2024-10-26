@@ -1,7 +1,7 @@
 export class ShortenedUrl {
 
-    // shortenedUrl: string;
-    //
-    // @Type(() => Date)
-    // date: Date
+  // shortenedUrl: string;
+  //
+  // @Type(() => Date)
+  // date: Date
 }

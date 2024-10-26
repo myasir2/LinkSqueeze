@@ -3,5 +3,24 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.snackbar-alert {
+  @apply text-center;
+  color: white !important;
+  background-color: var(--primary-color) !important;
+}
+
+.snackbar-success {
+  @apply text-center;
+  background-color: green !important;
+  color: white !important;
+}
+

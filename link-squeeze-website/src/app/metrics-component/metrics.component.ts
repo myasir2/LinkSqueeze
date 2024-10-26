@@ -18,55 +18,55 @@ interface GroupedMetrics {
 }
 
 @Component({
-    selector: "app-metrics-component",
-    standalone: true,
-    imports: [
-        MatDialogTitle,
-        MatDialogContent,
-        MatDividerModule,
-        MatIconModule,
-        MatProgressSpinnerModule,
-        NgIf,
-        MatTableModule
-    ],
-    templateUrl: "./metrics.component.html",
-    styleUrl: "./metrics.component.scss",
+  selector: "app-metrics-component",
+  standalone: true,
+  imports: [
+    MatDialogTitle,
+    MatDialogContent,
+    MatDividerModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    NgIf,
+    MatTableModule
+  ],
+  templateUrl: "./metrics.component.html",
+  styleUrl: "./metrics.component.scss",
 })
 export class MetricsComponent implements OnInit {
 
-    urlHash: string
-    isLoading = false;
-    groupedMetrics: GroupedMetrics[] = []
-    displayedColumns: string[] = ["metricType", "value"];
+  urlHash: string
+  isLoading = false;
+  groupedMetrics: GroupedMetrics[] = []
+  displayedColumns: string[] = ["metricType", "value"];
 
-    constructor(
+  constructor(
     @Inject(MAT_DIALOG_DATA) private data: MetricsMetadata,
     private api: BackendApiService,
     public dialogRef: MatDialogRef<MetricsComponent>
-    ) {
-        this.urlHash = data.urlHash
-    }
+  ) {
+    this.urlHash = data.urlHash
+  }
 
-    ngOnInit(): void {
-        this.getMetrics()
-    }
+  ngOnInit(): void {
+    this.getMetrics()
+  }
 
-    closeDialog(): void {
-        this.dialogRef.close()
-    }
+  closeDialog(): void {
+    this.dialogRef.close()
+  }
 
-    private async getMetrics() {
-        this.isLoading = true
+  private async getMetrics() {
+    this.isLoading = true
 
-        const metrics = await this.api.getUrlMetrics(this.urlHash)
-        this.groupedMetrics = _(metrics)
-            .groupBy("metricType")
-            .map((group, metricType) => ({
-                metricType,
-                value: _.sumBy(group, "count"),
-            }))
-            .value();
+    const metrics = await this.api.getUrlMetrics(this.urlHash)
+    this.groupedMetrics = _(metrics)
+      .groupBy("metricType")
+      .map((group, metricType) => ({
+        metricType,
+        value: _.sumBy(group, "count"),
+      }))
+      .value();
 
-        this.isLoading = false
-    }
+    this.isLoading = false
+  }
 }

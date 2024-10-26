@@ -2,9 +2,9 @@ import {UrlDetails} from "../url-details";
 
 export class CreateShortenedUrlResponse {
 
-    urlDetails: UrlDetails
+  urlDetails: UrlDetails
 
-    constructor(urlDetails: UrlDetails) {
-        this.urlDetails = urlDetails;
-    }
+  constructor(urlDetails: UrlDetails) {
+    this.urlDetails = urlDetails;
+  }
 }

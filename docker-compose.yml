@@ -15,27 +15,41 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - spring-mysql-network
+      - app-network
 
-  springboot:
-    image: public.ecr.aws/q8s2a7f3/myasir/link-squeeze:latest
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: spring_boot_service
     depends_on:
       - mysql
     ports:
       - "8080:8080"
     environment:
-
       # In a real world, we would store these passwords in something like SecretsManager, but since this is a test app,
       # it's OK to hardcode them
       SPRING_DATASOURCE_URL: jdbc:mariadb://mysql_db:3306/link_squeeze?allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: password
     networks:
-      - spring-mysql-network
+      - app-network
+
+  angular-app:
+    build:
+      context: ./link-squeeze-website  # Update this path to your Angular project directory
+      dockerfile: Dockerfile  # Assuming the Angular Dockerfile is named `Dockerfile`
+    container_name: angular-app
+    depends_on:
+      - api
+    ports:
+      - "4200:4200"  # Map container's port 4200 to host's port 4200
+    networks:
+      - app-network
 
 volumes:
   mysql_data:
 
 networks:
-  spring-mysql-network:
+  app-network:
+    driver: bridge
