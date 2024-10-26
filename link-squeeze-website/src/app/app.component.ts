@@ -58,6 +58,7 @@ export class AppComponent implements OnInit {
   savedUrls: UrlDetails[] = []
   displayedColumns: string[] = ["url", "shortUrl", "expiry", "actions"];
   isAuthenticated = false;
+  isLoading = false;
 
   constructor(
     private api: BackendApiService,
@@ -86,6 +87,7 @@ export class AppComponent implements OnInit {
       this.isAuthenticated = isAuthenticated;
 
       if (isAuthenticated) {
+        this.isLoading = true;
         this.api.getUserSavedUrls()
           .then(results => this.savedUrls = results)
           .catch(error => {
@@ -93,6 +95,7 @@ export class AppComponent implements OnInit {
 
             this.snackBarService.showAlertSnackbar(`Error from backend: ${error}`)
           })
+          .finally(() => this.isLoading = false)
       }
     })
   }
