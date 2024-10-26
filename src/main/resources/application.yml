@@ -16,4 +16,12 @@ spring:
     # it's OK to store directly in git
     username: root
     password: password
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${auth0.tenant}
+
 siteUrl: "http://localhost:8080"
+auth0:
+  tenant: https://dev-tizzzvpqp7owtekg.us.auth0.com/
