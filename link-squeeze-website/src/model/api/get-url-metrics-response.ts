@@ -2,9 +2,9 @@ import {UrlMetrics} from "../url-metrics";
 
 export class GetUrlMetricsResponse {
 
-  metrics: UrlMetrics[]
+    metrics: UrlMetrics[]
 
-  constructor(metrics: UrlMetrics[]) {
-    this.metrics = metrics;
-  }
+    constructor(metrics: UrlMetrics[]) {
+        this.metrics = metrics;
+    }
 }

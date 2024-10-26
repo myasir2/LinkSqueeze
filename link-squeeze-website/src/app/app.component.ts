@@ -1,31 +1,31 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {RouterOutlet} from '@angular/router';
+import {Component, Inject, OnInit} from "@angular/core";
+import {RouterOutlet} from "@angular/router";
 import {getCommonTextFieldValidator} from "../util/validation-utils";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {AsyncPipe, NgIf} from "@angular/common";
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatProgressSpinner} from '@angular/material/progress-spinner';
-import {ReactiveValidationModule} from 'angular-reactive-validation';
-import {MatButtonModule} from '@angular/material/button';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {provideNativeDateAdapter} from '@angular/material/core';
-import {addDays} from 'date-fns';
-import {AuthService} from '@auth0/auth0-angular';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {ReactiveValidationModule} from "angular-reactive-validation";
+import {MatButtonModule} from "@angular/material/button";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {provideNativeDateAdapter} from "@angular/material/core";
+import {addDays} from "date-fns";
+import {AuthService} from "@auth0/auth0-angular";
 import {BackendApiService} from "../service/backend-api.service";
 import {UrlDetails} from "../model/url-details";
-import {MatTableModule} from '@angular/material/table';
-import {MatIconModule} from '@angular/material/icon';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatDialog} from '@angular/material/dialog';
+import {MatTableModule} from "@angular/material/table";
+import {MatIconModule} from "@angular/material/icon";
+import {MatMenuModule} from "@angular/material/menu";
+import {MatDialog} from "@angular/material/dialog";
 import {MetricsComponent, MetricsMetadata} from "./metrics-component/metrics.component";
-import {firstValueFrom} from 'rxjs';
+import {firstValueFrom} from "rxjs";
 
 @Component({
-    selector: 'app-root',
+    selector: "app-root",
     standalone: true,
     providers: [
-        provideNativeDateAdapter(),
+        provideNativeDateAdapter()
     ],
     imports: [
         RouterOutlet,
@@ -42,8 +42,8 @@ import {firstValueFrom} from 'rxjs';
         MatIconModule,
         MatMenuModule
     ],
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.scss'
+    templateUrl: "./app.component.html",
+    styleUrl: "./app.component.scss",
 })
 export class AppComponent implements OnInit {
     private readonly currenDate = new Date();
@@ -51,19 +51,19 @@ export class AppComponent implements OnInit {
     readonly minDate = addDays(this.currenDate, 1)
     readonly maxDate = addDays(this.currenDate, 30);
 
-    title = 'link-squeeze-website';
-    isFormSubmitting: boolean = false
+    title = "link-squeeze-website";
+    isFormSubmitting = false
     form: FormGroup
     savedUrls: UrlDetails[] = []
     displayedColumns: string[] = ["url", "shortUrl", "expiry", "actions"];
-    isAuthenticated: boolean = false;
+    isAuthenticated = false;
 
     constructor(
         private api: BackendApiService,
         private formBuilder: FormBuilder,
         private dialog: MatDialog,
         public auth: AuthService,
-        @Inject('BASE_API_URL') public baseApiUrl: string,
+        @Inject("BASE_API_URL") public baseApiUrl: string
     ) {
         this.form = this.formBuilder.group({
             url: [
@@ -78,15 +78,15 @@ export class AppComponent implements OnInit {
     }
 
     async ngOnInit() {
-      this.auth.isAuthenticated$.subscribe(isAuthenticated => {
-        console.log(`Subscription response: isAuthenticated: ${isAuthenticated}`);
+        this.auth.isAuthenticated$.subscribe(isAuthenticated => {
+            console.log(`Subscription response: isAuthenticated: ${isAuthenticated}`);
 
-        this.isAuthenticated = isAuthenticated;
+            this.isAuthenticated = isAuthenticated;
 
-        if(isAuthenticated) {
-          this.api.getUserSavedUrls().then(results => this.savedUrls = results);
-        }
-      })
+            if(isAuthenticated) {
+                this.api.getUserSavedUrls().then(results => this.savedUrls = results);
+            }
+        })
     }
 
     async onLogin() {
@@ -102,10 +102,10 @@ export class AppComponent implements OnInit {
         const url = new URL(shortenedUrl)
         const urlHash = url.pathname.slice(1)
 
-        this.dialog.open<MetricsComponent, MetricsMetadata, any>(MetricsComponent, {
+        this.dialog.open<MetricsComponent, MetricsMetadata, unknown>(MetricsComponent, {
             data: {
-                urlHash
-            }
+                urlHash,
+            },
         })
     }
 
