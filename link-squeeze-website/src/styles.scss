@@ -12,15 +12,16 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-.snackbar-alert {
-  @apply text-center;
-  color: white !important;
-  background-color: var(--primary-color) !important;
-}
+.mat-mdc-snack-bar-container {
+  &.snackbar-alert {
+    --mdc-snackbar-container-color: #d4830d;
+    --mat-mdc-snack-bar-button-color: #fff;
+    --mdc-snackbar-supporting-text-color: #fff;
+  }
 
-.snackbar-success {
-  @apply text-center;
-  background-color: green !important;
-  color: white !important;
+  &.snackbar-success {
+    --mdc-snackbar-container-color: green !important;
+    --mdc-snackbar-supporting-text-color: white !important;
+  }
 }
 

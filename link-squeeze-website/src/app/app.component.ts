@@ -141,6 +141,7 @@ export class AppComponent implements OnInit {
       return;
     }
 
+    this.isFormSubmitting = true
     this.form.disable()
 
     const formValues = this.form.value
@@ -164,6 +165,7 @@ export class AppComponent implements OnInit {
       this.snackBarService.showAlertSnackbar(`Error from backend: ${error}`)
     }
     finally {
+      this.isFormSubmitting = false
       this.form.enable()
     }
   }
