@@ -1,0 +1,25 @@
+<div class="flex flex-row justify-center items-center">
+  <button mat-icon-button (click)="closeDialog()" *ngIf="dialogRef">
+    <mat-icon>close</mat-icon>
+  </button>
+  <h2 mat-dialog-title>URL Metrics</h2>
+</div>
+<mat-dialog-content>
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <div class="flex flex-col" *ngIf="!isLoading">
+    <table mat-table [dataSource]="groupedMetrics" class="mat-elevation-z8">
+      <ng-container matColumnDef="metricType">
+        <th mat-header-cell *matHeaderCellDef>Metric Type</th>
+        <td mat-cell *matCellDef="let element">{{ element.metricType }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="value">
+        <th mat-header-cell *matHeaderCellDef>Value</th>
+        <td mat-cell *matCellDef="let element">{{ element.value }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</mat-dialog-content>

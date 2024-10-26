@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {getCommonTextFieldValidator} from "../util/validation-utils";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -13,6 +13,12 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import {addDays} from 'date-fns';
 import {AuthService} from '@auth0/auth0-angular';
 import {BackendApiService} from "../service/backend-api.service";
+import {UserSavedUrl} from "../model/UserSavedUrl";
+import {MatTableModule} from '@angular/material/table';
+import {MatIconModule} from '@angular/material/icon';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatDialog} from '@angular/material/dialog';
+import {MetricsComponent, MetricsMetadata} from "./metrics-component/metrics.component";
 
 @Component({
     selector: 'app-root',
@@ -30,24 +36,32 @@ import {BackendApiService} from "../service/backend-api.service";
         ReactiveValidationModule,
         MatButtonModule,
         MatDatepickerModule,
-        AsyncPipe
+        AsyncPipe,
+        MatTableModule,
+        MatIconModule,
+        MatMenuModule
     ],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
+    private readonly currenDate = new Date();
+
+    readonly minDate = addDays(this.currenDate, 1)
+    readonly maxDate = addDays(this.currenDate, 30);
+
     title = 'link-squeeze-website';
     isFormSubmitting: boolean = false
     form: FormGroup
-
-    private readonly currenDate = new Date();
-    readonly minDate = addDays(this.currenDate, 1)
-    readonly maxDate = addDays(this.currenDate, 30);
+    savedUrls: UserSavedUrl[] = []
+    displayedColumns: string[] = ["url", "shortUrl", "expiry", "actions"];
 
     constructor(
         private api: BackendApiService,
         private formBuilder: FormBuilder,
-        public auth: AuthService
+        private dialog: MatDialog,
+        public auth: AuthService,
+        @Inject('BASE_API_URL') public baseApiUrl: string,
     ) {
         this.form = this.formBuilder.group({
             url: [
@@ -62,9 +76,7 @@ export class AppComponent implements OnInit {
     }
 
     async ngOnInit() {
-        const savedUrls = await this.api.getUserSavedUrls()
-
-        console.log(savedUrls)
+        this.savedUrls = await this.api.getUserSavedUrls()
     }
 
     async onLogin() {
@@ -73,6 +85,18 @@ export class AppComponent implements OnInit {
 
     async onLogOut() {
         this.auth.loginWithRedirect()
+    }
+
+    async onViewMetricsClick(urlHash: string) {
+        this.dialog.open<MetricsComponent, MetricsMetadata, any>(MetricsComponent, {
+            data: {
+                urlHash
+            }
+        })
+    }
+
+    async onDeleteUrl(url: string) {
+        console.log("Delete url for URL: " + url)
     }
 
     async onSubmit() {

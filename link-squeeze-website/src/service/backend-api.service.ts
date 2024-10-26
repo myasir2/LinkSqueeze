@@ -4,7 +4,9 @@ import {ClassConstructor, plainToInstance} from "class-transformer";
 import {catchError, firstValueFrom, map, throwError} from "rxjs";
 import {ApiServiceGenericError} from "../model/error/api-service-generic-error";
 import {UserSavedUrl} from "../model/UserSavedUrl";
-import {GetUserSavedUrlsResponse} from "../model/GetUserSavedUrlsResponse";
+import {GetUserSavedUrlsResponse} from "../model/api/GetUserSavedUrlsResponse";
+import {UrlMetric} from "../model/UrlMetric";
+import {GetUrlMetricsResponse} from "../model/api/GetUrlMetricsResponse";
 
 @Injectable({
   providedIn: 'root'
@@ -23,19 +25,20 @@ export class BackendApiService {
 
   public async getUserSavedUrls(): Promise<UserSavedUrl[]> {
     const endpoint = `${this.baseUrl}/user/urls`
-
-    console.log(endpoint)
-
-    const response = await firstValueFrom(
-      this.httpClient.get<GetUserSavedUrlsResponse>(endpoint).pipe(
-        map(result => plainToInstance(GetUserSavedUrlsResponse, result))
-      )
-    )
+    const response = await this.getRequest(endpoint, GetUserSavedUrlsResponse)
 
     return Promise.resolve(response.urls)
   }
 
-  public getRequest<T>(endpoint: string, clazz: ClassConstructor<T>): Promise<T> {
+  public async getUrlMetrics(urlHash: string): Promise<UrlMetric[]> {
+    const endpoint = `${this.baseUrl}/metrics/${urlHash}`
+
+    const response = await this.getRequest(endpoint, GetUrlMetricsResponse)
+
+    return Promise.resolve(response.metrics)
+  }
+
+  private getRequest<T>(endpoint: string, clazz: ClassConstructor<T>): Promise<T> {
     return firstValueFrom(
       this.httpClient.get<T>(endpoint).pipe(
         map(result => {

@@ -1,4 +1,4 @@
-import {UserSavedUrl} from "./UserSavedUrl";
+import {UserSavedUrl} from "../UserSavedUrl";
 
 export class GetUserSavedUrlsResponse {
 

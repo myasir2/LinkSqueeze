@@ -14,7 +14,7 @@
             If you would like to see a history of generated URLs, please log in.
         </p>
         <hr>
-        <form [formGroup]="form" class="flex flex-col gap-5 text-center">
+        <form [formGroup]="form" class="flex flex-col gap-5 text-center my-10">
             <mat-form-field class="w-full">
                 <mat-label>URL</mat-label>
                 <input matInput placeholder="URL" formControlName="url">
@@ -29,12 +29,60 @@
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
-            <button mat-flat-button mat-raised-button (click)="onSubmit()" [disabled]="form.invalid || isFormSubmitting">
-                <mat-progress-spinner mode="indeterminate" class="my-2 mx-auto" diameter="21" *ngIf="isFormSubmitting"></mat-progress-spinner>
-                <div *ngIf="!isFormSubmitting">Submit</div>
-            </button>
+            <div class="w-fit ml-auto">
+                <button mat-flat-button mat-raised-button (click)="onSubmit()"
+                        [disabled]="form.invalid || isFormSubmitting">
+                    <mat-progress-spinner mode="indeterminate" class="my-2 mx-auto" diameter="21"
+                                          *ngIf="isFormSubmitting"></mat-progress-spinner>
+                    <div *ngIf="!isFormSubmitting">Submit</div>
+                </button>
+            </div>
         </form>
         <hr>
+        <table mat-table [dataSource]="savedUrls" class="mat-elevation-z8">
 
+            <!-- URL column -->
+            <ng-container matColumnDef="url">
+                <th mat-header-cell *matHeaderCellDef>URL</th>
+                <td mat-cell *matCellDef="let element">{{ element.url }}</td>
+            </ng-container>
+
+            <!-- Shortened URL column -->
+            <ng-container matColumnDef="shortUrl">
+                <th mat-header-cell *matHeaderCellDef>Short URL</th>
+                <td mat-cell *matCellDef="let element">
+                    <a mat-button href="{{ baseApiUrl }}/{{ element.urlHash }}" target="_blank">/{{ element.urlHash }}</a>
+                </td>
+            </ng-container>
+
+            <!-- Expiry -->
+            <ng-container matColumnDef="expiry">
+                <th mat-header-cell *matHeaderCellDef>Expiry</th>
+                <td mat-cell *matCellDef="let element">{{ element.expiry }}</td>
+            </ng-container>
+
+            <!-- Actions -->
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let element">
+                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Actions menu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="onViewMetricsClick(element.urlHash)">
+                            <mat-icon>analytics</mat-icon>
+                            <span>Metrics</span>
+                        </button>
+                        <button mat-menu-item>
+                            <mat-icon>delete_forever</mat-icon>
+                            <span>Delete</span>
+                        </button>
+                    </mat-menu>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
     </div>
 </div>

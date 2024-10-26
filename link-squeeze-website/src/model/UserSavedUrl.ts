@@ -3,14 +3,14 @@ import {Type} from "class-transformer";
 export class UserSavedUrl {
 
   url: string
-  shortenedUrl: string
+  urlHash: string
 
   @Type(() => Date)
-  expiryDate?: Date
+  expiry?: Date
 
-  constructor(expiryDate: Date, url: string, shortenedUrl: string) {
-    this.expiryDate = expiryDate;
+  constructor(expiry: Date, url: string, urlHash: string) {
+    this.expiry = expiry;
     this.url = url;
-    this.shortenedUrl = shortenedUrl;
+    this.urlHash = urlHash;
   }
 }
