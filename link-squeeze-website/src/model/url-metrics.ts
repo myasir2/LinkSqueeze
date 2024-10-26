@@ -1,6 +1,6 @@
 import {Type} from "class-transformer"
 
-export class UrlMetric {
+export class UrlMetrics {
 
   urlHash: string
   metricType: string

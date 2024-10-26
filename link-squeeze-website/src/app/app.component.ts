@@ -13,7 +13,7 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import {addDays} from 'date-fns';
 import {AuthService} from '@auth0/auth0-angular';
 import {BackendApiService} from "../service/backend-api.service";
-import {UserSavedUrl} from "../model/UserSavedUrl";
+import {UrlDetails} from "../model/url-details";
 import {MatTableModule} from '@angular/material/table';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
     title = 'link-squeeze-website';
     isFormSubmitting: boolean = false
     form: FormGroup
-    savedUrls: UserSavedUrl[] = []
+    savedUrls: UrlDetails[] = []
     displayedColumns: string[] = ["url", "shortUrl", "expiry", "actions"];
 
     constructor(
@@ -68,10 +68,10 @@ export class AppComponent implements OnInit {
                 "",
                 [
                     ...getCommonTextFieldValidator("URL", 5, 100),
-                    Validators.pattern("^(https?:\\/\\/)?(www\\.)?([a-zA-Z0-9-]+\\.[a-zA-Z]{2,})(:[0-9]{1,5})?(\\/[^\\s]*)?\$")
+                    Validators.pattern("^(https?:\\/\\/)(www\\.)?([a-zA-Z0-9-]+\\.[a-zA-Z]{2,})(:[0-9]{1,5})?(\\/[^\\s]*)?$")
                 ]
             ],
-            expiryDate: [new Date(), Validators.required],
+            expiryDate: [null],
         })
     }
 
@@ -87,7 +87,11 @@ export class AppComponent implements OnInit {
         this.auth.loginWithRedirect()
     }
 
-    async onViewMetricsClick(urlHash: string) {
+    async onViewMetricsClick(shortenedUrl: string) {
+        // Get URL path. The first char in the index is always a "/"
+        const url = new URL(shortenedUrl)
+        const urlHash = url.pathname.slice(1)
+
         this.dialog.open<MetricsComponent, MetricsMetadata, any>(MetricsComponent, {
             data: {
                 urlHash
@@ -107,7 +111,14 @@ export class AppComponent implements OnInit {
         }
 
         const formValues = this.form.value
+        const url = formValues.url
+        const expiryDate: Date | null = formValues?.expiryDate
 
-        console.log(formValues)
+        const savedUrl = await this.api.createShortenedUrl(url, expiryDate)
+
+        this.savedUrls = [
+            ...this.savedUrls,
+            savedUrl
+        ]
     }
 }
