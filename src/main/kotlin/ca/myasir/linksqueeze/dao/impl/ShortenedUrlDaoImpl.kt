@@ -7,6 +7,7 @@ import ca.myasir.linksqueeze.util.UrlHash
 import ca.myasir.linksqueeze.util.UserId
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -58,8 +59,8 @@ class ShortenedUrlDaoImpl : ShortenedUrlDao {
     ) {
         transaction {
             ShortenedUrlEntity.deleteWhere {
-                ShortenedUrlEntity.urlHash eq urlHash.value
-                ShortenedUrlEntity.userId eq userId.value
+                (ShortenedUrlEntity.urlHash eq urlHash.value) and
+                (ShortenedUrlEntity.userId eq userId.value)
             }
         }
     }
