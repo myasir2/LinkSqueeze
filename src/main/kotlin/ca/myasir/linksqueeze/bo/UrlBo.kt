@@ -18,7 +18,7 @@ import java.time.ZonedDateTime
 @Service
 class UrlBo(
     private val hashService: HashService,
-    private val dao: ShortenedUrlDao,
+    private val shortenedUrlDao: ShortenedUrlDao,
     private val urlMetricsDao: UrlMetricsDao,
 ) {
 
@@ -28,7 +28,7 @@ class UrlBo(
      * Get url for the given hashId and add metric count
      */
     fun getUrl(urlHash: UrlHash): ShortenedUrl? {
-        return dao.get(urlHash)?.also {
+        return shortenedUrlDao.get(urlHash)?.also {
             urlMetricsDao.addMetric(UrlMetric(
                 it.urlHash,
                 MetricType.COUNT,
@@ -36,6 +36,28 @@ class UrlBo(
                 ZonedDateTime.now(),
             ))
         }
+    }
+
+    /**
+     * Get a list of the saved urls created by the given user
+     */
+    fun getUserSavedUrls(userId: UserId): List<ShortenedUrl> {
+        logger.info { "Getting saved urls for: $userId" }
+
+        val urls = shortenedUrlDao.getByUser(userId)
+
+        logger.info { "Saved urls for $userId: $urls" }
+
+        return urls
+    }
+
+    /**
+     * Get URL metrics for the given URL hash
+     */
+    fun getUrlMetrics(urlHash: UrlHash): List<UrlMetric> {
+        logger.info { "Getting metrics for $urlHash" }
+
+        return urlMetricsDao.getMetrics(urlHash)
     }
 
     /**
@@ -51,22 +73,9 @@ class UrlBo(
             userId = userId,
             expiryDate = expiry
         )
-        dao.add(shortenedUrl)
+        shortenedUrlDao.add(shortenedUrl)
 
         return urlHash
-    }
-
-    /**
-     * Get a list of the saved urls created by the given user
-     */
-    fun getUserSavedUrls(userId: UserId): List<ShortenedUrl> {
-        logger.info { "Getting saved urls for: $userId" }
-
-        val urls = dao.getByUser(userId)
-
-        logger.info { "Saved urls for $userId: $urls" }
-
-        return urls
     }
 
     /**
@@ -75,7 +84,7 @@ class UrlBo(
     fun deleteUrl(urlHash: UrlHash, userId: UserId) {
         logger.info { "Deleting url: $urlHash" }
 
-        dao.delete(urlHash, userId)
+        shortenedUrlDao.delete(urlHash, userId)
     }
 
     private companion object {

@@ -1,23 +1,22 @@
 package ca.myasir.linksqueeze.controller
 
 import ca.myasir.linksqueeze.bo.UrlBo
+import ca.myasir.linksqueeze.config.AppConfig
 import ca.myasir.linksqueeze.exception.ResourceNotFoundException
+import ca.myasir.linksqueeze.model.UserSavedUrl
 import ca.myasir.linksqueeze.model.request.CreateShortenedUrlRequest
-import ca.myasir.linksqueeze.model.response.CreateShortenedUrlResponse
-import ca.myasir.linksqueeze.model.response.DeleteUrlRequest
-import ca.myasir.linksqueeze.model.response.RedirectToUrlRequest
+import ca.myasir.linksqueeze.model.response.*
 import ca.myasir.linksqueeze.util.UrlHash
 import ca.myasir.linksqueeze.util.UserId
 import jakarta.validation.Valid
-import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.view.RedirectView
-import java.time.ZonedDateTime
 
 @RestController
 @RequestMapping("/")
 class UrlController(
+    private val appConfig: AppConfig,
     private val urlBo: UrlBo
 ): BaseController() {
 
@@ -32,12 +31,40 @@ class UrlController(
         return redirectView
     }
 
+    @GetMapping("/user/urls")
+    fun getUserSavedUrls(): ResponseEntity<GetUserSavedUrlsResponse> {
+        val urls = urlBo.getUserSavedUrls(UserId("userId"))
+        val savedUrls = urls.map {
+            UserSavedUrl(
+                url = it.url,
+                urlHash = it.urlHash.value,
+                expiry = it.expiryDate
+            )
+        }
+
+        return ResponseEntity.ok(
+            GetUserSavedUrlsResponse(savedUrls)
+        )
+    }
+
+    @GetMapping("/metrics/{hashId}")
+    fun getUrlMetrics(@Valid request: GetUrlMetricsRequest): ResponseEntity<GetUrlMetricsResponse> {
+        val urlMetrics = urlBo.getUrlMetrics(UrlHash(request.hashId))
+
+        return ResponseEntity.ok(
+            GetUrlMetricsResponse(urlMetrics)
+        )
+    }
+
     @PostMapping("/generate")
     fun createUrl(@Valid @RequestBody request: CreateShortenedUrlRequest): ResponseEntity<CreateShortenedUrlResponse> {
         val hash = urlBo.createShortenedUrl(request.url, UserId("userId"), request.expiry)
 
         return ResponseEntity.ok(
-            CreateShortenedUrlResponse(hash.value, request.expiry)
+            CreateShortenedUrlResponse(
+                createFullUrl(hash),
+                request.expiry
+            )
         )
     }
 
@@ -46,5 +73,9 @@ class UrlController(
         urlBo.deleteUrl(UrlHash(request.hashId), UserId("userId"))
 
         return ResponseEntity.ok().build()
+    }
+
+    private fun createFullUrl(hash: UrlHash): String {
+        return "${appConfig.siteUrl}/${hash.value}"
     }
 }
