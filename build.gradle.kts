@@ -55,6 +55,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("io.mockk:mockk:1.13.13")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("com.h2database:h2:2.1.214")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -63,6 +64,12 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
+    }
+}
+
+ktlint {
+    filter {
+        exclude("**/test/**")
     }
 }
 

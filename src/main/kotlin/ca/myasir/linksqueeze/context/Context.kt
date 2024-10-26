@@ -6,6 +6,6 @@ data class Context(
     val userId: UserId,
 )
 
-enum class RequestAttributeType(s: String) {
-    CONTEXT("context"),
+enum class RequestAttributeType {
+    CONTEXT,
 }

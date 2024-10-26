@@ -8,6 +8,7 @@ import ca.myasir.linksqueeze.model.response.ExceptionResponse
 import ca.myasir.linksqueeze.util.ResponseConstants
 import ca.myasir.linksqueeze.util.UrlHash
 import jakarta.servlet.http.HttpServletRequest
+import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.BindException
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseStatus
 abstract class BaseController(
     private val appConfig: AppConfig,
 ) {
+    private val logger = KotlinLogging.logger {}
+
     fun extractContextFromRequest(request: HttpServletRequest): Context {
         return request.getAttribute(RequestAttributeType.CONTEXT.toString()) as Context
     }
@@ -43,6 +46,8 @@ abstract class BaseController(
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = [(HttpMessageNotReadableException::class)])
     fun handleMissingFieldsExceptionForPostRequests(exception: HttpMessageNotReadableException): ExceptionResponse {
+        logger.error { exception.message }
+
         return ExceptionResponse(
             "There are missing required properties in this request",
         )
@@ -51,6 +56,8 @@ abstract class BaseController(
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(value = [(ResourceNotFoundException::class)])
     fun handleResourceNotFoundException(exception: ResourceNotFoundException): ExceptionResponse {
+        logger.error { exception.message }
+
         return ExceptionResponse(ResponseConstants.RESOURCE_NOT_FOUND_MESSAGE)
     }
 
