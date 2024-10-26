@@ -2,17 +2,17 @@ import {Type} from "class-transformer"
 
 export class UrlMetrics {
 
-  urlHash: string
-  metricType: string
-  count: number
+    urlHash: string
+    metricType: string
+    count: number
 
   @Type(() => Date)
-  date: Date
+      date: Date
 
   constructor(urlHash: string, metricType: string, count: number, date: Date) {
-    this.urlHash = urlHash;
-    this.metricType = metricType;
-    this.count = count;
-    this.date = date;
+      this.urlHash = urlHash
+      this.metricType = metricType
+      this.count = count
+      this.date = date
   }
 }

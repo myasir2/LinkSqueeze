@@ -48,6 +48,8 @@ module.exports = tseslint.config(
         exports: "never",
         functions: "never",
       }],
+
+      "semi": ["warn", "never"]
     },
   },
   {

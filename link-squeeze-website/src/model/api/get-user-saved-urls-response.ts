@@ -1,10 +1,10 @@
-import {UrlDetails} from "../url-details";
+import {UrlDetails} from "../url-details"
 
 export class GetUserSavedUrlsResponse {
 
-  urls: UrlDetails[];
+    urls: UrlDetails[]
 
-  constructor(urls: UrlDetails[]) {
-    this.urls = urls;
-  }
+    constructor(urls: UrlDetails[]) {
+        this.urls = urls
+    }
 }
