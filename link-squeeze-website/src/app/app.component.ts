@@ -141,6 +141,8 @@ export class AppComponent implements OnInit {
       return;
     }
 
+    this.form.disable()
+
     const formValues = this.form.value
     const url = formValues.url
     const expiryDate: Date | null = formValues?.expiryDate
@@ -160,6 +162,9 @@ export class AppComponent implements OnInit {
       console.error(error)
 
       this.snackBarService.showAlertSnackbar(`Error from backend: ${error}`)
+    }
+    finally {
+      this.form.enable()
     }
   }
 }
