@@ -19,6 +19,15 @@ export const appConfig: ApplicationConfig = {
       useRefreshTokens: true,
       authorizationParams: {
         redirect_uri: window.location.origin,
+        audience: "https://linksqueeze.myasir.ca"
+      },
+      httpInterceptor: {
+        allowedList: [
+          {
+            // Replace with your API URL (or use a pattern)
+            uri: `${environment.backendApiUrl}/user/*`,
+          }
+        ]
       }
     }),
     {

@@ -74,7 +74,8 @@
               "buildTarget": "link-squeeze-website:build:production"
             },
             "development": {
-              "buildTarget": "link-squeeze-website:build:development"
+              "buildTarget": "link-squeeze-website:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

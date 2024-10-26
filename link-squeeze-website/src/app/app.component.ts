@@ -19,6 +19,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatDialog} from '@angular/material/dialog';
 import {MetricsComponent, MetricsMetadata} from "./metrics-component/metrics.component";
+import {firstValueFrom} from 'rxjs';
 
 @Component({
     selector: 'app-root',
@@ -55,6 +56,7 @@ export class AppComponent implements OnInit {
     form: FormGroup
     savedUrls: UrlDetails[] = []
     displayedColumns: string[] = ["url", "shortUrl", "expiry", "actions"];
+    isAuthenticated: boolean = false;
 
     constructor(
         private api: BackendApiService,
@@ -76,7 +78,15 @@ export class AppComponent implements OnInit {
     }
 
     async ngOnInit() {
-        this.savedUrls = await this.api.getUserSavedUrls()
+      this.auth.isAuthenticated$.subscribe(isAuthenticated => {
+        console.log(`Subscription response: isAuthenticated: ${isAuthenticated}`);
+
+        this.isAuthenticated = isAuthenticated;
+
+        if(isAuthenticated) {
+          this.api.getUserSavedUrls().then(results => this.savedUrls = results);
+        }
+      })
     }
 
     async onLogin() {
@@ -84,7 +94,7 @@ export class AppComponent implements OnInit {
     }
 
     async onLogOut() {
-        this.auth.loginWithRedirect()
+        this.auth.logout()
     }
 
     async onViewMetricsClick(shortenedUrl: string) {
@@ -99,8 +109,14 @@ export class AppComponent implements OnInit {
         })
     }
 
-    async onDeleteUrl(url: string) {
-        console.log("Delete url for URL: " + url)
+    async onDeleteUrl(shortenedUrl: string) {
+        // Get URL path. The first char in the index is always a "/"
+        const url = new URL(shortenedUrl)
+        const urlHash = url.pathname.slice(1)
+
+        await this.api.deleteUrl(urlHash)
+
+        this.savedUrls = this.savedUrls.filter(s => s.shortenedUrl !== shortenedUrl)
     }
 
     async onSubmit() {
@@ -113,8 +129,9 @@ export class AppComponent implements OnInit {
         const formValues = this.form.value
         const url = formValues.url
         const expiryDate: Date | null = formValues?.expiryDate
+        const isAuthenticated = await firstValueFrom(this.auth.isAuthenticated$)
 
-        const savedUrl = await this.api.createShortenedUrl(url, expiryDate)
+        const savedUrl = await this.api.createShortenedUrl(url, expiryDate, isAuthenticated)
 
         this.savedUrls = [
             ...this.savedUrls,

@@ -1,9 +1,9 @@
 export const environment = {
   production: false,
   siteDomain: "http://localhost:4200",
-  backendApiUrl: "http://localhost:8080",
+  backendApiUrl: "/api",
   auth0: {
-    clientId: "E73gAqhgEauk9zGgz192cqLZ0FDjm4Lx",
+    clientId: "JPygSKXeOO4wJCKVMvrHUOqJyrnPD13l",
     domain: "dev-tizzzvpqp7owtekg.us.auth0.com"
   }
 };

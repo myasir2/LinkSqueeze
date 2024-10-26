@@ -25,21 +25,26 @@ export class BackendApiService {
   }
 
   public async getUserSavedUrls(): Promise<UrlDetails[]> {
-    const endpoint = `${this.baseUrl}/user/urls`
+    const endpoint = `${this.baseUrl}/user/url`
     const response = await this.getRequest(endpoint, GetUserSavedUrlsResponse)
 
     return Promise.resolve(response.urls)
   }
 
   public async getUrlMetrics(urlHash: string): Promise<UrlMetrics[]> {
-    const endpoint = `${this.baseUrl}/metrics/${urlHash}`
+    const endpoint = `${this.baseUrl}/user/url/metrics/${urlHash}`
     const response = await this.getRequest(endpoint, GetUrlMetricsResponse)
 
     return Promise.resolve(response.metrics)
   }
 
-  public async createShortenedUrl(url: string, expiry: Date | null): Promise<UrlDetails> {
-    const endpoint = `${this.baseUrl}/generate`
+  public async createShortenedUrl(url: string, expiry: Date | null, isAuthenticated: boolean): Promise<UrlDetails> {
+    let endpoint = `${this.baseUrl}/generate`
+
+    if(isAuthenticated) {
+      endpoint = `${this.baseUrl}/user/url/generate`
+    }
+
     const request = {
       "url": url,
       "expiry": expiry?.toISOString()
@@ -47,6 +52,16 @@ export class BackendApiService {
     const response = await this.postRequest(endpoint, request, CreateShortenedUrlResponse)
 
     return Promise.resolve(response.urlDetails)
+  }
+
+  public async deleteUrl(urlHash: string): Promise<void> {
+    const endpoint = `${this.baseUrl}/user/url/${urlHash}`
+
+    return firstValueFrom(
+      this.httpClient.delete<void>(endpoint, {headers: this.commonUpdateHeaders}).pipe(
+        catchError(this.handleError),
+      )
+    )
   }
 
   private getRequest<T>(endpoint: string, clazz: ClassConstructor<T>): Promise<T> {
